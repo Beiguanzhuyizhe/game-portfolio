@@ -1,39 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
+import type { ProjectMedia } from "@/content/portfolio";
+import { pick } from "@/content/portfolio";
 
-type Props = {
-  media?: string[];
-  // Visible fallback when no real screenshots are provided yet — keeps the
-  // carousel UI testable/authentic while the user fills in assets later.
-  projectNum: string;
-  altPrefix?: string;
-};
-
-// Lightweight carousel: prev/next arrows, dot indicators, auto-advance with
-// pause on hover. Uses plain <img> for placeholders swap-in. If `media` is
-// missing or empty we render 3 placeholder slides with varying gradients so
-// the UI still reads as a gallery.
-export default function Carousel({ media, projectNum, altPrefix = "Screenshot" }: Props) {
-  const slides =
-    media && media.length > 0
-      ? media
-      : // 3 placeholder slides so the carousel controls make sense.
-        [null, null, null];
-  const [idx, setIdx] = useState(0);
+export default function Carousel({ media }: { media: ProjectMedia[] }) {
+  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+  const { lang, t } = useLanguage();
 
-  // Auto-advance every 5s unless the user is interacting.
   useEffect(() => {
-    if (paused || slides.length <= 1) return;
-    const id = window.setInterval(() => {
-      setIdx((i) => (i + 1) % slides.length);
-    }, 5000);
-    return () => window.clearInterval(id);
-  }, [paused, slides.length]);
+    const syncVisibility = () => setPageVisible(!document.hidden);
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (paused || !pageVisible || media.length < 2) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % media.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [media.length, pageVisible, paused]);
 
   const go = (delta: number) => {
-    setIdx((i) => (i + delta + slides.length) % slides.length);
+    setIndex((current) => (current + delta + media.length) % media.length);
   };
 
   return (
@@ -41,80 +35,50 @@ export default function Carousel({ media, projectNum, altPrefix = "Screenshot" }
       className="carousel"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onPointerDown={() => setPaused(true)}
     >
-      <div
-        className="carousel__track"
-        style={{ transform: `translateX(-${idx * 100}%)` }}
-      >
-        {slides.map((src, i) => (
-          <div key={i} className="carousel__slide">
-            {src ? (
-              // Real screenshot
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={src}
-                alt={`${altPrefix} ${i + 1}`}
-                className="carousel__img"
-                loading="lazy"
-              />
-            ) : (
-              // Placeholder — each slide uses a different gradient origin so
-              // they're visually distinct while the carousel is browsed.
-              <div
-                className="carousel__placeholder"
-                style={{
-                  background: `radial-gradient(circle at ${30 + i * 20}% ${
-                    35 + i * 15
-                  }%, var(--ice-500), transparent 55%),
-                     radial-gradient(circle at ${75 - i * 10}% ${
-                    65 - i * 10
-                  }%, var(--ice-700), transparent 55%),
-                     linear-gradient(135deg, var(--ink-2), var(--ink-0))`,
-                }}
+      <div className="carousel__track" style={{ transform: `translateX(-${index * 100}%)` }}>
+        {media.map((item, itemIndex) => (
+          <div className="carousel__slide" key={item.type + item.src}>
+            {item.type === "video" ? (
+              <video
+                className="project-video"
+                controls
+                playsInline
+                preload="metadata"
+                poster={item.poster}
+                aria-label={t("projects.play")}
+                onPlay={() => setPaused(true)}
+                onPause={() => setPaused(false)}
+                onEnded={() => setPaused(false)}
               >
-                <span className="project-modal__media-num">{projectNum}</span>
-              </div>
+                <source src={item.src} type="video/mp4" />
+                {t("projects.play")}
+              </video>
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={item.src} alt={pick(item.alt, lang)} loading={itemIndex ? "lazy" : "eager"} />
             )}
           </div>
         ))}
       </div>
 
-      {slides.length > 1 && (
+      {media.length > 1 && (
         <>
-          <button
-            type="button"
-            className="carousel__nav carousel__nav--prev"
-            onClick={() => go(-1)}
-            data-cursor="hover"
-            aria-label="Prev"
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-              <path d="M15 6l-6 6 6 6" />
-            </svg>
+          <button className="carousel__arrow carousel__arrow--prev" type="button" onClick={() => go(-1)} aria-label={t("carousel.prev")}>
+            ←
           </button>
-          <button
-            type="button"
-            className="carousel__nav carousel__nav--next"
-            onClick={() => go(1)}
-            data-cursor="hover"
-            aria-label="Next"
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+          <button className="carousel__arrow carousel__arrow--next" type="button" onClick={() => go(1)} aria-label={t("carousel.next")}>
+            →
           </button>
           <div className="carousel__dots">
-            {slides.map((_, i) => (
+            {media.map((item, dotIndex) => (
               <button
-                key={i}
+                key={item.src}
                 type="button"
-                onClick={() => setIdx(i)}
-                data-cursor="hover"
-                aria-label={`Slide ${i + 1}`}
-                aria-current={i === idx ? "true" : undefined}
-                className={`carousel__dot ${
-                  i === idx ? "carousel__dot--active" : ""
-                }`}
+                onClick={() => setIndex(dotIndex)}
+                aria-label={`${dotIndex + 1} / ${media.length}`}
+                aria-current={dotIndex === index ? "true" : undefined}
               />
             ))}
           </div>

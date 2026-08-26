@@ -26,6 +26,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // The local preview is opened through 127.0.0.1 in Codex. Explicitly allow
+  // that development origin so the client bundle and HMR can hydrate normally.
+  allowedDevOrigins: ["127.0.0.1"],
+
   // Emits a minimal server bundle at `.next/standalone/` so the Docker
   // runtime image can drop npm/node_modules entirely and just run
   // `node server.js`. Trims the final image to ~100 MB.

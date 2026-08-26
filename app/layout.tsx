@@ -1,81 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 import FrozenBackground from "@/components/FrozenBackground";
 import ScrollProgress from "@/components/ScrollProgress";
-import MagneticTargets from "@/components/MagneticTargets";
-import SeasonProvider, {
-  SEASON_BOOT_SCRIPT,
-} from "@/components/SeasonProvider";
-import LanguageProvider, {
-  LANG_BOOT_SCRIPT,
-} from "@/components/LanguageProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import LanguageProvider, { LANG_BOOT_SCRIPT } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
-  title: "Txema Albero — Software Engineer & Tech Lead",
-  description:
-    "Portfolio inmersivo de Txema Albero — Software Engineer / Tech Lead. Experiencias web 3D con Next.js y React Three Fiber.",
-  authors: [{ name: "Txema Albero" }],
+  title: "陈墨涵 — 游戏策划与技术开发",
+  description: "陈墨涵的游戏项目作品集：关卡设计、机制设计与技术开发。",
+  authors: [{ name: "陈墨涵" }],
   openGraph: {
-    title: "Txema Albero — Software Engineer & Tech Lead",
-    description:
-      "Portfolio inmersivo con escena 3D interactiva. Next.js, React Three Fiber, GLSL.",
+    title: "陈墨涵 — 游戏策划与技术开发",
+    description: "精选游戏项目与可玩版本。",
     type: "website",
-    locale: "es_ES",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Txema Albero — Software Engineer & Tech Lead",
-    description:
-      "Portfolio inmersivo con escena 3D interactiva. Next.js, React Three Fiber, GLSL.",
+    locale: "zh_CN",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#060e1c",
-  colorScheme: "dark",
+  themeColor: "#dff3ff",
+  colorScheme: "light",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
+    <html lang="zh" suppressHydrationWarning>
       <head>
-        {/* Run synchronously before hydration to apply the user's stored
-            season + language — avoids a flash of the default values. */}
-        <script dangerouslySetInnerHTML={{ __html: SEASON_BOOT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
       </head>
-      <body
-        className="min-h-full flex flex-col"
-        suppressHydrationWarning
-      >
+      <body suppressHydrationWarning>
         <LanguageProvider>
-          <SeasonProvider>
-            <FrozenBackground />
-            <ScrollProgress />
-            {children}
-            <CustomCursor />
-            <MagneticTargets />
-          </SeasonProvider>
+          <FrozenBackground />
+          <ScrollProgress />
+          {children}
+          <CustomCursor />
         </LanguageProvider>
       </body>
     </html>

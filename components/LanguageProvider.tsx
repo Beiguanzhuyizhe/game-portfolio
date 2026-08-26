@@ -23,7 +23,7 @@ type LanguageCtx = {
 
 const Ctx = createContext<LanguageCtx | null>(null);
 
-const STORAGE_KEY = "portfolio-lang";
+const STORAGE_KEY = "chenmohan-portfolio-lang";
 
 // Inlined in <head> before hydration so the document lang attribute matches
 // the user's stored preference (avoids FOUC and wrong screen-reader lang).
@@ -37,7 +37,7 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
     // <html> element. No-op if the boot script didn't find a stored pref.
     const domLang = document.documentElement.lang;
     if (
-      (domLang === "es" || domLang === "en") &&
+      (domLang === "zh" || domLang === "en") &&
       domLang !== lang
     ) {
       setLangState(domLang);

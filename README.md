@@ -1,169 +1,62 @@
-# 3D Developer Portfolio
+# 陈墨涵 · 游戏作品集
 
-An immersive, interactive developer portfolio built with **Next.js 16**, **React Three Fiber**, and **Tailwind CSS v4**. Features a 3D mechanical keyboard hero scene, seasonal themes, smooth scroll animations, bilingual support (ES/EN), and a fully responsive design.
+面向游戏策划与技术开发岗位的中英双语个人作品集。网站包含可交互的 3D 技能键盘、项目详情弹窗、图片轮播、网页内嵌视频、平滑滚动和响应式布局。
 
-**[Live Demo](https://txemaalbero.com)** &nbsp;|&nbsp; **Built by [Txema Albero](https://es.linkedin.com/in/jose-mar%C3%ADa-albero-belamendia-b9319a246)**
+## 项目内容
 
----
+1. 《卡斯特症候群》
+2. 《不可知域》
+3. 《暴走黄昏街》
+4. 《金鱼之梦》
 
-## Highlights
+## 日常维护入口
 
-- **Interactive 3D Keyboard** — A full mechanical keyboard rendered with React Three Fiber and Three.js. Keys react to real keypresses with physics-based animations and sound effects.
-- **Seasonal Themes** — Four complete visual themes (Winter, Spring, Summer, Autumn) that re-skin the entire UI — colours, gradients, and 3D scene lighting — with a single click.
-- **Project Showcases** — Modal dialogs with image carousels, tech stack chips, and links to live demos and source code.
-- **Bilingual (ES/EN)** — Lightweight custom i18n layer with zero external dependencies. Language toggle persists across sections.
-- **Smooth Scroll & Reveal Animations** — Powered by [Lenis](https://github.com/darkroomengineering/lenis) for buttery smooth scrolling with intersection-observer-based reveal effects.
-- **Custom Cursor & Magnetic Targets** — A custom cursor that morphs on interactive elements, with magnetic snap behaviour on buttons.
-- **Responsive & Mobile-First** — Optimised for recruiters reviewing on phones. WebGL performance and touch interactions are first-class concerns.
-- **Security Headers** — HSTS, X-Frame-Options, Content-Type-Options, Referrer-Policy, and Permissions-Policy configured out of the box.
+- 首页、项目简介和详情文案：`content/portfolio.ts`
+- 文案编辑说明：`content/README.md`
+- 封面、轮播图片和网页视频：`public/media/`
+- 媒体替换与压缩说明：`MEDIA_GUIDE.md`
 
-## Tech Stack
+不要把原始高码率视频放进 `public/`。`public/media/**/video/demo.mp4` 只保存可直接用于网页和 Vercel 的 H.264/AAC 优化版本。
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
-| 3D | [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [@react-three/drei](https://github.com/pmndrs/drei) + [Three.js](https://threejs.org/) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
-| Scroll | [Lenis](https://github.com/darkroomengineering/lenis) |
-| Icons | [Simple Icons](https://simpleicons.org/) (tech logos on 3D keycaps) |
-| Language | TypeScript |
-| Deploy | Vercel / Docker |
-
-## Getting Started
-
-### Prerequisites
-
-- **Node.js** 20+
-- **npm** 10+
-
-### Installation
+## 本地运行
 
 ```bash
-# Clone the repository
-git clone https://github.com/Txemalon/3d-portfolio.git
-cd 3d-portfolio
-
-# Install dependencies
-npm install
-
-# Start the development server
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Build for Production
+部署前检查：
 
 ```bash
 npm run build
-npm start
 ```
 
-### Docker
+## Vercel 工作流
 
-The project includes a multi-stage Dockerfile optimised for production (standalone output, ~100 MB final image):
+首次连接本地目录与已经存在的 Vercel 项目：
 
 ```bash
-docker build -t 3d-portfolio .
-docker run -p 3000:3000 3d-portfolio
+npx vercel login
+npx vercel link
 ```
 
-## Project Structure
-
-```
-├── app/
-│   ├── globals.css        # Tailwind + CSS custom properties (seasonal themes)
-│   ├── layout.tsx         # Root layout with providers
-│   └── page.tsx           # Home page with all sections
-├── components/
-│   ├── FrozenKeyboard.tsx # 3D keyboard scene (R3F)
-│   ├── FrozenBackground.tsx # Animated background particles
-│   ├── Carousel.tsx       # Image carousel for project modals
-│   ├── ProjectModal.tsx   # Fullscreen project detail dialog
-│   ├── SeasonProvider.tsx # Seasonal theme context
-│   ├── SeasonPicker.tsx   # Theme switcher UI
-│   ├── LanguageProvider.tsx # i18n context
-│   ├── LanguagePicker.tsx # Language toggle
-│   ├── CustomCursor.tsx   # Custom cursor with hover states
-│   ├── MagneticTargets.tsx# Magnetic snap on interactive elements
-│   ├── Reveal.tsx         # Scroll-triggered reveal animations
-│   ├── SectionNav.tsx     # Dot navigation sidebar
-│   ├── ScrollProgress.tsx # Scroll progress indicator
-│   ├── CopyEmail.tsx      # Copy-to-clipboard button
-│   └── smooth-scroll.tsx  # Lenis smooth scroll wrapper
-├── lib/
-│   ├── i18n.ts            # Bilingual dictionary (ES/EN)
-│   └── seasons.ts         # Season theme definitions
-├── public/
-│   ├── fonts/             # 3D text typefaces
-│   ├── projects/          # Project screenshots
-│   └── sounds/            # Keyboard sound effects
-├── Dockerfile             # Multi-stage production build
-├── next.config.ts         # Standalone output + security headers
-└── package.json
-```
-
-## Customisation
-
-### Adding a Project
-
-Projects are defined in `app/page.tsx` in the `projects` array. Each entry supports:
-
-```typescript
-{
-  num: "05",
-  name: { es: "Mi Proyecto", en: "My Project" },
-  stack: ["Next.js", "TypeScript"],
-  desc: { es: "Descripción corta", en: "Short description" },
-  details: { es: "Descripción larga...", en: "Long description..." },
-  url: "https://myproject.com",          // optional — adds "View Site" button
-  github: "https://github.com/user/repo", // optional — adds "View Code" button
-  media: ["/projects/my-project/1.png"], // optional — carousel screenshots
-  highlights: ["nextdotjs", "typescript"], // simple-icons slugs for 3D keyboard
-  badge: { es: "En desarrollo", en: "In progress" }, // optional status badge
-  align: "left",                         // card alignment
-  section: "project5",                   // data attribute for scroll nav
-}
-```
-
-### Changing Themes
-
-Seasonal colour tokens are defined as CSS custom properties in `app/globals.css` under `[data-season="..."]` selectors. Edit or add new seasons there.
-
-### Translations
-
-All UI strings live in `lib/i18n.ts` as a flat dictionary with `{ es, en }` leaves. Add new keys or languages by extending the structure.
-
-## Deployment
-
-### Vercel (Recommended)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Txemalon/3d-portfolio)
-
-### Docker / Self-Hosted
-
-The included `Dockerfile` produces a standalone Next.js image. Works with any container platform (Railway, Fly.io, Coolify, etc.):
+日常更新先创建预览，确认无误后再发布正式版本：
 
 ```bash
-docker build -t 3d-portfolio .
-docker run -p 3000:3000 3d-portfolio
+npx vercel
+npx vercel --prod
 ```
 
-## Performance
+如果连接 GitHub，建议在功能分支上检查 Preview Deployment，确认后再合并到 `main`。
 
-- **Standalone output** — No `node_modules` in production; the Docker image is ~100 MB.
-- **Lazy loading** — Project screenshots use native lazy loading.
-- **Font optimisation** — Uses `next/font` for zero-layout-shift web fonts.
-- **Turbopack** — Sub-300ms dev server cold starts.
+## 主要技术
 
-## License
+- Next.js 16 / React 19 / TypeScript
+- React Three Fiber / Three.js
+- Tailwind CSS 4 与自定义 CSS 3D
+- Lenis 平滑滚动
+- Simple Icons 技能图标
 
-This project is open source and available under the [MIT License](LICENSE).
+## 开源来源与许可
 
-## Author
-
-**Jose Maria Albero Belamendia (Txema)**
-
-- [LinkedIn](https://es.linkedin.com/in/jose-mar%C3%ADa-albero-belamendia-b9319a246)
-- [GitHub](https://github.com/Txemalon)
-- [X / Twitter](https://x.com/Txemalon)
+本项目基于 [Txema Albero 的 3D Portfolio](https://github.com/Txemalon/3d-portfolio) 改造，并保留原项目的 [MIT License](LICENSE) 与版权声明。

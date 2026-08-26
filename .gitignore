@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/.npm-cache/
+/.tools/
 /.pnp
 .pnp.*
 .yarn/*
@@ -49,6 +51,7 @@ CLAUDE.md
 AGENTS.md
 PORTFOLIO_BRIEF.md
 skills-lock.json
+/media-review/
 
 # editors
 .vscode/

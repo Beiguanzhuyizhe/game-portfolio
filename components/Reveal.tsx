@@ -3,7 +3,7 @@
 import {
   createElement,
   useEffect,
-  useRef,
+  useState,
   type CSSProperties,
   type ElementType,
   type ReactNode,
@@ -38,10 +38,10 @@ export default function Reveal({
   threshold = 0.15,
   once = true,
 }: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
+  const [element, setElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = element;
     if (!el) return;
     if (typeof IntersectionObserver === "undefined") {
       el.classList.add("reveal-in");
@@ -63,7 +63,7 @@ export default function Reveal({
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold, once]);
+  }, [element, threshold, once]);
 
   const axis: Record<Direction, string> = {
     up: `translate3d(0, ${distance}px, 0)`,
@@ -83,7 +83,7 @@ export default function Reveal({
   return createElement(
     Tag,
     {
-      ref,
+      ref: setElement,
       className: `reveal ${className}`.trim(),
       style,
     },
